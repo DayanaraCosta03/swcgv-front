@@ -336,7 +336,6 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
     <!-- Modal crear/editar -->
     <InventoryProductFormModal
       v-model:open="formOpen"
-      :categories="categories ?? []"
       :product="selectedProduct"
       @saved="onSaved"
     />

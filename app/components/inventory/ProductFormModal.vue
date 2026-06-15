@@ -6,7 +6,6 @@ import type { Product } from "~/types/product";
 import { API_URL } from "~/constants/api";
 
 const props = defineProps<{
-  categories: Category[];
   product?: Product | null;
 }>();
 
@@ -32,7 +31,10 @@ const schema = z.object({
     .number("El stock es requerido")
     .int("Debe ser un número entero")
     .min(0, "El stock no puede ser negativo"),
-  categoryId: z.number("Selecciona una categoría"),
+  categoryName: z
+    .string("La categoría es requerida")
+    .min(1, "La categoría es requerida")
+    .max(50, "Máximo 50 caracteres"),
 });
 
 type Schema = z.output<typeof schema>;
@@ -42,12 +44,40 @@ const state = reactive<Partial<Schema>>({
   description: undefined,
   price: undefined,
   stock: undefined,
-  categoryId: undefined,
+  categoryName: undefined,
 });
 
-const categoryItems = computed(() =>
-  props.categories.map((c) => ({ label: c.name, value: c.id })),
+const categoriesList = ref<Category[]>([]);
+const token = useCookie("auth_token");
+
+let searchTimeout: any = null;
+
+// Watch categoryName changes to fetch matching categories for the datalist
+watch(
+  () => state.categoryName,
+  (newVal) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      const searchVal = newVal?.trim() || "";
+      try {
+        const data = await $fetch<Category[]>(`${API_URL}/categories`, {
+          query: { search: searchVal, limit: 10 },
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        });
+        categoriesList.value = data;
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    }, 300);
+  },
+  { immediate: true },
 );
+
+onUnmounted(() => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+});
 
 // Rellena/limpia el formulario cada vez que se abre el modal.
 watch(open, (isOpen) => {
@@ -56,7 +86,7 @@ watch(open, (isOpen) => {
   state.description = props.product?.description || undefined;
   state.price = props.product ? Number(props.product.price) : undefined;
   state.stock = props.product?.stock;
-  state.categoryId = props.product?.categoryId;
+  state.categoryName = props.product?.category?.name || undefined;
 });
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
@@ -65,8 +95,6 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     const url = isEdit.value
       ? `${API_URL}/products/${props.product!.id}`
       : `${API_URL}/products`;
-
-    const token = useCookie("auth_token");
 
     await $fetch(url, {
       method: isEdit.value ? "PATCH" : "POST",
@@ -107,13 +135,16 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           <UInput v-model="state.name" class="w-full" placeholder="Ej. Rosal rojo" />
         </UFormField>
 
-        <UFormField label="Categoría" name="categoryId" required>
-          <USelect
-            v-model="state.categoryId"
-            :items="categoryItems"
+        <UFormField label="Categoría" name="categoryName" required>
+          <UInput
+            v-model="state.categoryName"
             class="w-full"
-            placeholder="Selecciona una categoría"
+            placeholder="Escribe o selecciona una categoría"
+            list="categories-list"
           />
+          <datalist id="categories-list">
+            <option v-for="c in categoriesList" :key="c.id" :value="c.name" />
+          </datalist>
         </UFormField>
 
         <UFormField label="Descripción (opcional)" name="description">
