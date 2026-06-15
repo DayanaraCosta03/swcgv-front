@@ -66,9 +66,14 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
       ? `${API_URL}/products/${props.product!.id}`
       : `${API_URL}/products`;
 
+    const token = useCookie("auth_token");
+
     await $fetch(url, {
       method: isEdit.value ? "PATCH" : "POST",
       body: event.data,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
     });
 
     toast.add({

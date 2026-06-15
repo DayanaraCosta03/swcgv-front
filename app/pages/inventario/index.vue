@@ -47,21 +47,39 @@ const query = computed(() => {
   if (categoryId.value) q.categoryId = categoryId.value;
   return q;
 });
+const token = useCookie("auth_token");
+const headers = computed(() => {
+  const h: Record<string, string> = {};
+  if (token.value) {
+    h.Authorization = `Bearer ${token.value}`;
+  }
+  return h;
+});
 
 // --- Datos: TODO sale de la BD ---
 const { data, pending, refresh } = await useFetch<ProductListResponse>(
   `${API_URL}/products`,
-  { query, default: () => ({ items: [], total: 0, page: 1, limit: 10, pages: 0 }) },
+  {
+    query,
+    headers,
+    default: () => ({ items: [], total: 0, page: 1, limit: 10, pages: 0 }),
+  },
 );
 
 const { data: stats, refresh: refreshStats } = await useFetch<ProductStats>(
   `${API_URL}/products/stats`,
-  { default: () => ({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0 }) },
+  {
+    headers,
+    default: () => ({ total: 0, inStock: 0, lowStock: 0, outOfStock: 0 }),
+  },
 );
 
 const { data: categories } = await useFetch<Category[]>(
   `${API_URL}/categories`,
-  { default: () => [] },
+  {
+    headers,
+    default: () => [],
+  },
 );
 
 const categoryItems = computed(() => [
@@ -75,10 +93,30 @@ const sortItems = [
 ];
 
 const statCards = computed(() => [
-  { label: "TOTAL DE PRODUCTOS", value: stats.value.total, icon: "i-lucide-boxes", color: "text-gray-900" },
-  { label: "EN STOCK", value: stats.value.inStock, icon: "i-lucide-circle-check", color: "text-green-600" },
-  { label: "STOCK BAJO", value: stats.value.lowStock, icon: "i-lucide-triangle-alert", color: "text-amber-500" },
-  { label: "SIN STOCK", value: stats.value.outOfStock, icon: "i-lucide-circle-x", color: "text-red-600" },
+  {
+    label: "TOTAL DE PRODUCTOS",
+    value: stats.value.total,
+    icon: "i-lucide-boxes",
+    color: "text-gray-900",
+  },
+  {
+    label: "EN STOCK",
+    value: stats.value.inStock,
+    icon: "i-lucide-circle-check",
+    color: "text-green-600",
+  },
+  {
+    label: "STOCK BAJO",
+    value: stats.value.lowStock,
+    icon: "i-lucide-triangle-alert",
+    color: "text-amber-500",
+  },
+  {
+    label: "SIN STOCK",
+    value: stats.value.outOfStock,
+    icon: "i-lucide-circle-x",
+    color: "text-red-600",
+  },
 ]);
 
 // --- Modal crear/editar ---
@@ -116,6 +154,9 @@ const confirmDelete = async () => {
   try {
     await $fetch(`${API_URL}/products/${productToDelete.value.id}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
     });
     toast.add({ title: "Producto eliminado", color: "success" });
     deleteOpen.value = false;
@@ -159,7 +200,7 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
       <div
         v-for="card in statCards"
         :key="card.label"
-        class="rounded-2xl border border-secondary/40 bg-white/75 p-5 shadow-sm "
+        class="rounded-2xl border border-secondary/40 bg-white/75 p-5 shadow-sm"
       >
         <div class="flex items-center justify-between">
           <p class="text-xs font-semibold tracking-wide text-gray-500">
@@ -195,7 +236,11 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
         class="w-44"
       />
       <UButton
-        :icon="order === 'ASC' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow'"
+        :icon="
+          order === 'ASC'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+        "
         color="neutral"
         variant="outline"
         class="rounded-xl"
@@ -237,14 +282,19 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
             >
               <td class="px-6 py-4">
                 <p class="font-medium text-gray-900">{{ product.name }}</p>
-                <p v-if="product.description" class="line-clamp-1 text-xs text-gray-400">
+                <p
+                  v-if="product.description"
+                  class="line-clamp-1 text-xs text-gray-400"
+                >
                   {{ product.description }}
                 </p>
               </td>
               <td class="px-6 py-4">
                 <InventoryProductStatusBadge :status="product.status" />
               </td>
-              <td class="px-6 py-4 font-medium">{{ formatPrice(product.price) }}</td>
+              <td class="px-6 py-4 font-medium">
+                {{ formatPrice(product.price) }}
+              </td>
               <td class="px-6 py-4">{{ product.stock }}</td>
               <td class="px-6 py-4">{{ product.category?.name ?? "-" }}</td>
               <td class="px-6 py-4">
@@ -296,8 +346,8 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
       <template #body>
         <p class="text-gray-600">
           ¿Seguro que deseas eliminar
-          <span class="font-semibold">{{ productToDelete?.name }}</span>? Esta
-          acción no se puede deshacer.
+          <span class="font-semibold">{{ productToDelete?.name }}</span
+          >? Esta acción no se puede deshacer.
         </p>
         <div class="flex justify-end gap-2 pt-4">
           <UButton

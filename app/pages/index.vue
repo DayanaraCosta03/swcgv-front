@@ -41,12 +41,18 @@ const onSubmit = async (payload: FormSubmitEvent<Schema>) => {
   try {
     const response = await $fetch<ResponseAuthLogin>(`${API_URL}/auth/login`, {
       method: "POST",
-      body: JSON.stringify(payload.data),
+      body: payload.data,
     });
+
+    const token = useCookie("auth_token");
+    token.value = response.token;
+
+    const userCookie = useCookie("user_info");
+    userCookie.value = JSON.stringify(response.user);
 
     useState(USER_STORE, () => response);
     error.value = "";
-    router.push("/dashboard");
+    router.push("/inventario");
   } catch {
     error.value = "Credenciales invalidas";
   } finally {
