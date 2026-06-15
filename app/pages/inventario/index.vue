@@ -221,20 +221,25 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
         icon="i-lucide-search"
         placeholder="Buscar..."
         class="min-w-48 flex-1"
+        aria-label="Buscar producto"
       />
+      <!-- html-validate-disable no-missing-references -->
       <USelect
         v-model="categoryId"
         :items="categoryItems"
         placeholder="Categoría"
         icon="i-lucide-tag"
         class="w-52"
+        aria-label="Filtrar por categoría"
       />
       <USelect
         v-model="sortBy"
         :items="sortItems"
         icon="i-lucide-arrow-down-up"
         class="w-44"
+        aria-label="Ordenar por columna"
       />
+      <!-- html-validate-enable no-missing-references -->
       <UButton
         :icon="
           order === 'ASC'
@@ -300,6 +305,7 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
               <td class="px-6 py-4">
                 <div class="flex justify-end gap-1">
                   <UButton
+                    aria-label="Editar producto"
                     icon="i-lucide-pencil"
                     color="neutral"
                     variant="ghost"
@@ -307,6 +313,7 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
                     @click="openEdit(product)"
                   />
                   <UButton
+                    aria-label="Eliminar producto"
                     icon="i-lucide-trash-2"
                     color="error"
                     variant="ghost"
@@ -325,7 +332,7 @@ const formatPrice = (price: string) => `S/ ${Number(price).toFixed(2)}`;
         v-if="data.total > limit"
         class="flex justify-end border-t border-gray-100 px-6 py-3"
       >
-        <UPagination
+        <LazyUPagination
           v-model:page="page"
           :total="data.total"
           :items-per-page="limit"

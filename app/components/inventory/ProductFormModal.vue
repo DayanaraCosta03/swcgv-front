@@ -130,13 +130,22 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     :title="isEdit ? 'Editar producto' : 'Agregar producto'"
   >
     <template #body>
-      <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormField label="Nombre del producto" name="name" required>
-          <UInput v-model="state.name" class="w-full" placeholder="Ej. Rosal rojo" />
-        </UFormField>
+      <LazyUForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4"
+        @submit="onSubmit"
+      >
+        <LazyUFormField label="Nombre del producto" name="name" required>
+          <LazyUInput
+            v-model="state.name"
+            class="w-full"
+            placeholder="Ej. Rosal rojo"
+          />
+        </LazyUFormField>
 
-        <UFormField label="Categoría" name="categoryName" required>
-          <UInput
+        <LazyUFormField label="Categoría" name="categoryName" required>
+          <LazyUInput
             v-model="state.categoryName"
             class="w-full"
             placeholder="Escribe o selecciona una categoría"
@@ -145,20 +154,20 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           <datalist id="categories-list">
             <option v-for="c in categoriesList" :key="c.id" :value="c.name" />
           </datalist>
-        </UFormField>
+        </LazyUFormField>
 
-        <UFormField label="Descripción (opcional)" name="description">
-          <UTextarea
+        <LazyUFormField label="Descripción (opcional)" name="description">
+          <LazyUTextarea
             v-model="state.description"
             class="w-full"
             :rows="3"
             placeholder="Detalles del producto"
           />
-        </UFormField>
+        </LazyUFormField>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <UFormField label="Precio (S/.)" name="price" required>
-            <UInput
+          <LazyUFormField label="Precio (S/.)" name="price" required>
+            <LazyUInput
               v-model.number="state.price"
               type="number"
               step="0.01"
@@ -166,29 +175,29 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
               class="w-full"
               placeholder="0.00"
             />
-          </UFormField>
+          </LazyUFormField>
 
-          <UFormField label="Stock inicial" name="stock" required>
-            <UInput
+          <LazyUFormField label="Stock inicial" name="stock" required>
+            <LazyUInput
               v-model.number="state.stock"
               type="number"
               min="0"
               class="w-full"
               placeholder="0"
             />
-          </UFormField>
+          </LazyUFormField>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <UButton
+          <LazyUButton
             color="neutral"
             variant="outline"
             label="Cancelar"
             @click="open = false"
           />
-          <UButton type="submit" label="Guardar" :loading="loading" />
+          <LazyUButton type="submit" label="Guardar" :loading="loading" />
         </div>
-      </UForm>
+      </LazyUForm>
     </template>
   </UModal>
 </template>
