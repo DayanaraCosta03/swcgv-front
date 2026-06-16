@@ -27,6 +27,21 @@ const schema = z.object({
     .max(15, "Máximo 15 caracteres")
     .optional()
     .or(z.literal("")),
+  dni: z.string().max(20, "Máximo 20 caracteres").optional().or(z.literal("")),
+  email: z
+    .string()
+    .max(255, "Máximo 255 caracteres")
+    .optional()
+    .refine((val) => !val || z.string().email().safeParse(val).success, {
+      message: "El formato de correo no es válido",
+    })
+    .or(z.literal("")),
+  address: z
+    .string()
+    .max(255, "Máximo 255 caracteres")
+    .optional()
+    .or(z.literal("")),
+  isActive: z.boolean().optional(),
   notes: z
     .string()
     .max(255, "Máximo 255 caracteres")
@@ -39,6 +54,10 @@ type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
   name: undefined,
   phoneNumber: undefined,
+  dni: undefined,
+  email: undefined,
+  address: undefined,
+  isActive: true,
   notes: undefined,
 });
 
@@ -49,6 +68,10 @@ watch(open, (isOpen) => {
   if (!isOpen) return;
   state.name = props.client?.name || "";
   state.phoneNumber = props.client?.phoneNumber || "";
+  state.dni = props.client?.dni || "";
+  state.email = props.client?.email || "";
+  state.address = props.client?.address || "";
+  state.isActive = props.client ? props.client.isActive : true;
   state.notes = props.client?.notes || "";
 });
 
@@ -107,12 +130,42 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           />
         </LazyUFormField>
 
-        <LazyUFormField label="Teléfono (opcional)" name="phoneNumber">
+        <div class="grid grid-cols-2 gap-4">
+          <LazyUFormField label="DNI (opcional)" name="dni">
+            <LazyUInput
+              v-model="state.dni"
+              class="w-full"
+              placeholder="Ej. 12345678"
+              aria-label="DNI del cliente"
+            />
+          </LazyUFormField>
+
+          <LazyUFormField label="Teléfono (opcional)" name="phoneNumber">
+            <LazyUInput
+              v-model="state.phoneNumber"
+              class="w-full"
+              placeholder="Ej. +51999999999"
+              aria-label="Teléfono del cliente"
+            />
+          </LazyUFormField>
+        </div>
+
+        <LazyUFormField label="Correo electrónico (opcional)" name="email">
           <LazyUInput
-            v-model="state.phoneNumber"
+            v-model="state.email"
             class="w-full"
-            placeholder="Ej. +51999999999"
-            aria-label="Teléfono del cliente"
+            type="email"
+            placeholder="Ej. juan.perez@example.com"
+            aria-label="Correo electrónico del cliente"
+          />
+        </LazyUFormField>
+
+        <LazyUFormField label="Dirección (opcional)" name="address">
+          <LazyUInput
+            v-model="state.address"
+            class="w-full"
+            placeholder="Ej. Av. Larco 123, Trujillo"
+            aria-label="Dirección del cliente"
           />
         </LazyUFormField>
 
@@ -124,6 +177,15 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             placeholder="Ej. Cliente frecuente, prefiere entrega por las mañanas..."
             aria-label="Notas del cliente"
           />
+        </LazyUFormField>
+
+        <LazyUFormField v-if="isEdit" label="Estado (Activo)" name="isActive">
+          <div class="flex items-center gap-2 pt-1">
+            <LazyUSwitch v-model="state.isActive" aria-label="Cliente activo" />
+            <span class="text-sm text-gray-500">
+              {{ state.isActive ? "Activo" : "Inactivo" }}
+            </span>
+          </div>
         </LazyUFormField>
 
         <div class="flex justify-end gap-2 pt-2">

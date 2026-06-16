@@ -178,19 +178,21 @@ const confirmDelete = async () => {
           <thead class="border-b border-gray-200 bg-gray-50">
             <tr class="text-sm font-semibold text-gray-700">
               <th class="px-6 py-4">CLIENTE</th>
+              <th class="px-6 py-4">DNI</th>
               <th class="px-6 py-4">TELÉFONO</th>
-              <th class="px-6 py-4">NOTAS</th>
+              <th class="px-6 py-4">CORREO</th>
+              <th class="px-6 py-4">ESTADO</th>
               <th class="px-6 py-4 text-right">ACCIONES</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr v-if="pending">
-              <td colspan="4" class="px-6 py-10 text-center text-gray-400">
+              <td colspan="6" class="px-6 py-10 text-center text-gray-400">
                 Cargando clientes...
               </td>
             </tr>
             <tr v-else-if="data.items.length === 0">
-              <td colspan="4" class="px-6 py-10 text-center text-gray-400">
+              <td colspan="6" class="px-6 py-10 text-center text-gray-400">
                 No se encontraron clientes.
               </td>
             </tr>
@@ -202,12 +204,27 @@ const confirmDelete = async () => {
             >
               <td class="px-6 py-4">
                 <p class="font-medium text-gray-900">{{ client.name }}</p>
+                <p v-if="client.address" class="text-xs text-gray-400">
+                  {{ client.address }}
+                </p>
+              </td>
+              <td class="px-6 py-4 text-xs text-gray-600">
+                {{ client.dni || "-" }}
               </td>
               <td class="px-6 py-4 text-xs text-gray-600">
                 {{ client.phoneNumber || "-" }}
               </td>
-              <td class="px-6 py-4 text-gray-500 max-w-xs truncate">
-                {{ client.notes || "-" }}
+              <td class="px-6 py-4 text-xs text-gray-600">
+                {{ client.email || "-" }}
+              </td>
+              <td class="px-6 py-4">
+                <UBadge
+                  :color="client.isActive ? 'success' : 'neutral'"
+                  variant="subtle"
+                  class="rounded-md font-semibold text-xs"
+                >
+                  {{ client.isActive ? "Activo" : "Inactivo" }}
+                </UBadge>
               </td>
               <td class="px-6 py-4">
                 <div class="flex justify-end gap-1">

@@ -2,6 +2,10 @@ export interface Client {
   id: number;
   name: string;
   phoneNumber?: string;
+  dni?: string;
+  email?: string;
+  address?: string;
+  isActive: boolean;
   notes?: string;
 }
 
