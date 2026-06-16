@@ -52,7 +52,7 @@ const onSubmit = async (payload: FormSubmitEvent<Schema>) => {
 
     useState(USER_STORE, () => response);
     error.value = "";
-    router.push("/inventario");
+    router.push("/dashboard");
   } catch {
     error.value = "Credenciales invalidas";
   } finally {
