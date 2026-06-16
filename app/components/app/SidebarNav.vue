@@ -4,11 +4,11 @@ const emit = defineEmits<{ navigate: [] }>();
 
 // Estructura de navegación del sistema (no son "datos", es el menú de la app).
 const links = [
+  { label: "Dashboard", to: "/dashboard", icon: "i-lucide-layout-dashboard" },
   { label: "Inventario", to: "/inventario", icon: "i-lucide-boxes" },
   { label: "Clientes", to: "/clientes", icon: "i-lucide-users" },
   { label: "Proveedores", to: "/proveedores", icon: "i-lucide-truck" },
   { label: "Ventas", to: "/ventas", icon: "i-lucide-shopping-cart" },
-  { label: "Dashboard", to: "/dashboard", icon: "i-lucide-layout-dashboard" },
   { label: "Reportes", to: "/reportes", icon: "i-lucide-bar-chart-3" },
 ];
 </script>
