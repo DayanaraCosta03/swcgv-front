@@ -63,7 +63,7 @@ const statCards = computed(() => [
     label: "TOTAL DE CLIENTES",
     value: stats.value.total,
     icon: "i-lucide-users",
-    color: "text-gray-900",
+    iconWrap: "bg-purple-100 text-purple-700",
   },
 ]);
 
@@ -146,15 +146,22 @@ const confirmDelete = async () => {
       <div
         v-for="card in statCards"
         :key="card.label"
-        class="rounded-2xl border border-secondary/40 bg-white/75 p-5 shadow-sm"
+        class="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
       >
-        <div class="flex items-center justify-between">
+        <div
+          :class="[
+            'flex size-12 shrink-0 items-center justify-center rounded-xl',
+            card.iconWrap,
+          ]"
+        >
+          <UIcon :name="card.icon" class="size-6" />
+        </div>
+        <div class="min-w-0">
           <p class="text-xs font-semibold tracking-wide text-gray-500">
             {{ card.label }}
           </p>
-          <UIcon :name="card.icon" :class="['size-5', card.color]" />
+          <p class="mt-0.5 text-3xl font-bold text-gray-900">{{ card.value }}</p>
         </div>
-        <p :class="['mt-2 text-4xl font-bold', card.color]">{{ card.value }}</p>
       </div>
     </div>
 

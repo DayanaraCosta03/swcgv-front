@@ -61,29 +61,34 @@ const kpis = computed(() => [
     label: "INGRESOS TOTALES",
     value: soles(data.value.sales.revenue),
     icon: "i-lucide-dollar-sign",
+    iconWrap: "bg-green-100 text-green-700",
   },
   {
     label: "VENTAS DEL MES",
     value: String(data.value.sales.monthCount),
     sub: soles(data.value.sales.monthRevenue),
     icon: "i-lucide-trending-up",
+    iconWrap: "bg-blue-100 text-blue-700",
   },
   {
     label: "VENTAS DE HOY",
     value: String(data.value.sales.todayCount),
     sub: soles(data.value.sales.todayRevenue),
     icon: "i-lucide-shopping-cart",
+    iconWrap: "bg-cyan-100 text-cyan-700",
   },
   {
     label: "CLIENTES",
     value: String(data.value.clients.total),
     icon: "i-lucide-users",
+    iconWrap: "bg-purple-100 text-purple-700",
   },
   {
     label: "ALERTAS DE STOCK",
     value: String(data.value.inventory.lowStock + data.value.inventory.outOfStock),
     sub: `${data.value.inventory.outOfStock} sin stock`,
     icon: "i-lucide-triangle-alert",
+    iconWrap: "bg-amber-100 text-amber-700",
   },
 ]);
 
@@ -154,16 +159,25 @@ const pieOptions = {
       <div
         v-for="kpi in kpis"
         :key="kpi.label"
-        class="rounded-2xl bg-white p-5 shadow-sm"
+        class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
       >
-        <div class="flex items-center justify-between">
-          <p class="text-xs font-semibold tracking-wide text-gray-500">
-            {{ kpi.label }}
-          </p>
-          <UIcon :name="kpi.icon" class="size-5 text-primary" />
+        <div class="flex items-start gap-3">
+          <div
+            :class="[
+              'flex size-11 shrink-0 items-center justify-center rounded-xl',
+              kpi.iconWrap,
+            ]"
+          >
+            <UIcon :name="kpi.icon" class="size-5" />
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold tracking-wide text-gray-500">
+              {{ kpi.label }}
+            </p>
+            <p class="mt-0.5 text-2xl font-bold text-gray-900">{{ kpi.value }}</p>
+            <p v-if="kpi.sub" class="text-xs text-gray-400">{{ kpi.sub }}</p>
+          </div>
         </div>
-        <p class="mt-2 text-2xl font-bold text-gray-900">{{ kpi.value }}</p>
-        <p v-if="kpi.sub" class="text-xs text-gray-400">{{ kpi.sub }}</p>
       </div>
     </div>
 

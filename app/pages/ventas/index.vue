@@ -123,14 +123,20 @@ const formatDate = (value: string) =>
 
     <!-- Tarjeta de estadística -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div class="rounded-2xl border border-secondary/40 bg-white/75 p-5 shadow-sm">
-        <div class="flex items-center justify-between">
+      <div
+        class="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+      >
+        <div
+          class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700"
+        >
+          <UIcon name="i-lucide-shopping-cart" class="size-6" />
+        </div>
+        <div class="min-w-0">
           <p class="text-xs font-semibold tracking-wide text-gray-500">
             TOTAL DE VENTAS
           </p>
-          <UIcon name="i-lucide-shopping-cart" class="size-5 text-gray-900" />
+          <p class="mt-0.5 text-3xl font-bold text-gray-900">{{ data.total }}</p>
         </div>
-        <p class="mt-2 text-4xl font-bold text-gray-900">{{ data.total }}</p>
       </div>
     </div>
 
