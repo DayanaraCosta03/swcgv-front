@@ -3,7 +3,7 @@ const mobileMenuOpen = ref(false);
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-[#274025]">
+  <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar fijo (escritorio) -->
     <aside class="hidden w-72 shrink-0 bg-black lg:block">
       <AppSidebarNav show-logo />
@@ -48,21 +48,9 @@ const mobileMenuOpen = ref(false);
         <span class="text-lg font-black tracking-wide">VIVERO LA HUERTA</span>
       </header>
 
-      <main class="relative min-w-0 flex-1 p-4 sm:p-6">
-        <!-- Foto de fondo del vivero (como en el diseño), optimizada por @nuxt/image -->
-        <NuxtImg
-          src="/images/inventario-bg.png"
-          alt=""
-          aria-hidden="true"
-          format="webp"
-          quality="70"
-          width="1752"
-          height="1333"
-          class="pointer-events-none absolute inset-0 size-full object-cover opacity-81"
-        />
-        <div class="relative">
-          <slot />
-        </div>
+      <!-- Fondo sólido claro (gris suave): máxima legibilidad y look moderno. -->
+      <main class="min-w-0 flex-1 bg-gray-50 p-4 sm:p-6">
+        <slot />
       </main>
     </div>
   </div>

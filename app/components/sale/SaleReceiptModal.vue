@@ -39,7 +39,55 @@ const formatDate = (value: string) =>
     timeStyle: "short",
   });
 
-const print = () => window.print();
+// Imprime el comprobante en un iframe aislado con los estilos de la página.
+// Así evitamos que el `overflow`/altura del modal recorte el contenido
+// (con `window.print()` directo solo salía la cabecera).
+const print = () => {
+  const el = document.getElementById("receipt-print");
+  if (!el) return;
+
+  // Copiamos los estilos actuales (Tailwind / tema) para que el comprobante
+  // se vea igual dentro del iframe.
+  const styles = Array.from(
+    document.querySelectorAll('style, link[rel="stylesheet"]'),
+  )
+    .map((node) => node.outerHTML)
+    .join("");
+
+  const iframe = document.createElement("iframe");
+  Object.assign(iframe.style, {
+    position: "fixed",
+    right: "0",
+    bottom: "0",
+    width: "0",
+    height: "0",
+    border: "0",
+  });
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow?.document;
+  if (!doc) {
+    iframe.remove();
+    return;
+  }
+
+  doc.open();
+  doc.write(
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Comprobante N° ${String(
+      sale.value?.id ?? "",
+    ).padStart(6, "0")}</title>${styles}</head><body class="bg-white p-4">${
+      el.outerHTML
+    }</body></html>`,
+  );
+  doc.close();
+
+  // Damos un instante para que carguen las hojas de estilo antes de imprimir.
+  setTimeout(() => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => iframe.remove(), 1000);
+  }, 400);
+};
 
 const downloadPdf = () => {
   if (sale.value) generateReceiptPdf(sale.value);
